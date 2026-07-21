@@ -1,0 +1,237 @@
+---
+import Base from '../layouts/Base.astro';
+import { diensten, site } from '../data/site.js';
+---
+<Base title="Offerte aanvragen — JVN Kompas" description="Vraag in drie korte stappen een vrijblijvende offerte aan.">
+  <section class="section page-head">
+    <div class="wrap">
+      <span class="eyebrow"><span class="idx">Offerte</span> / Vrijblijvend</span>
+      <h1>Vraag je offerte aan</h1>
+      <p class="lead">Drie korte stappen. Hoe concreter je bent, hoe scherper je prijs — en die is vrijblijvend.</p>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap wizard-wrap">
+      <ol class="stepper" id="stepper">
+        <li class="step active" data-step="1"><span class="mono">01</span> Discipline</li>
+        <li class="step" data-step="2"><span class="mono">02</span> Scope &amp; budget</li>
+        <li class="step" data-step="3"><span class="mono">03</span> Gegevens</li>
+      </ol>
+      <div class="progress"><span class="progress-bar" id="progressBar"></span></div>
+
+      <form class="wizard card" id="wizard" novalidate>
+        <!-- STAP 1 -->
+        <fieldset class="panel active" data-panel="1">
+          <legend>Waarvoor heb je iets nodig?</legend>
+          <div class="disc-grid">
+            {diensten.map((d, i) => (
+              <label class="disc-opt">
+                <input type="radio" name="discipline" value={d.titel} required checked={i === 0} />
+                <span class="disc-card">
+                  <span class="badge">{d.disc}</span>
+                  <span class="disc-title">{d.titel}</span>
+                  <span class="muted disc-desc">{d.tagline}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <!-- STAP 2 -->
+        <fieldset class="panel" data-panel="2">
+          <legend>Scope &amp; budget</legend>
+          <div class="field">
+            <label for="budget">Indicatief budget</label>
+            <select id="budget" name="budget" required>
+              <option value="">Kies een richtprijs…</option>
+              <option>&lt; € 500</option>
+              <option>€ 500 – € 1.500</option>
+              <option>€ 1.500 – € 3.500</option>
+              <option>&gt; € 3.500</option>
+              <option>Weet ik nog niet</option>
+            </select>
+            <span class="err" data-err></span>
+          </div>
+          <div class="field">
+            <label for="deadline">Gewenste deadline <span class="opt">(optioneel)</span></label>
+            <input id="deadline" name="deadline" type="text" placeholder="bv. voor de zomer, geen haast…" />
+          </div>
+          <div class="field">
+            <label for="scope">Korte omschrijving</label>
+            <textarea id="scope" name="scope" rows="4" required placeholder="Vertel kort wat je voor ogen hebt."></textarea>
+            <span class="err" data-err></span>
+          </div>
+        </fieldset>
+
+        <!-- STAP 3 -->
+        <fieldset class="panel" data-panel="3">
+          <legend>Je gegevens</legend>
+          <div class="field">
+            <label for="wnaam">Naam</label>
+            <input id="wnaam" name="wnaam" required autocomplete="name" />
+            <span class="err" data-err></span>
+          </div>
+          <div class="field">
+            <label for="wemail">E-mail</label>
+            <input id="wemail" name="wemail" type="email" required autocomplete="email" />
+            <span class="err" data-err></span>
+          </div>
+          <label class="consent">
+            <input type="checkbox" id="wconsent" name="wconsent" required />
+            <span>Ik ga akkoord met het <a href="/privacybeleid">privacybeleid</a>.</span>
+          </label>
+        </fieldset>
+
+        <div class="wizard-nav">
+          <button type="button" class="btn btn--ghost" id="backBtn" hidden>Terug</button>
+          <button type="button" class="btn btn--primary" id="nextBtn">Volgende</button>
+          <button type="submit" class="btn btn--primary" id="submitBtn" hidden>Verstuur mijn aanvraag</button>
+        </div>
+        <p class="form-status" id="wizStatus" role="status"></p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-head{padding-bottom:0}
+  .page-head h1{font-size:var(--fs-3xl);margin-top:1rem}
+  .page-head .lead{margin-top:1.2rem}
+  .wizard-wrap{max-width:720px}
+  .stepper{list-style:none;display:flex;gap:1.4rem;flex-wrap:wrap;margin-bottom:1rem}
+  .step{font-family:var(--font-display);font-weight:600;color:var(--text-muted);display:flex;gap:.5rem;align-items:center;font-size:.95rem}
+  .step .mono{font-size:.75rem;width:1.9em;height:1.9em;display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid var(--border);border-radius:50%;color:var(--text-muted)}
+  .step.active{color:var(--text)}
+  .step.active .mono{border-color:var(--accent);color:var(--accent)}
+  .step.done .mono{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .progress{height:3px;background:var(--border);border-radius:2px;margin-bottom:var(--space-4);overflow:hidden}
+  .progress-bar{display:block;height:100%;width:33%;background:var(--accent);transition:width var(--dur-slow) var(--ease-standard)}
+  .panel{border:0;padding:0;margin:0;display:none}
+  .panel.active{display:block;animation:slideIn var(--dur-base) var(--ease-standard)}
+  @keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+  .panel legend{font-family:var(--font-display);font-weight:600;font-size:var(--fs-md);margin-bottom:1.2rem}
+  .disc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+  .disc-opt input{position:absolute;opacity:0}
+  .disc-card{display:flex;flex-direction:column;gap:.5rem;padding:1.1rem;border:1px solid var(--border);
+    border-radius:var(--radius-md);cursor:pointer;height:100%;transition:border-color var(--dur-base) var(--ease-standard)}
+  .disc-opt input:checked + .disc-card{border-color:var(--accent);background:var(--onyx-800)}
+  .disc-opt input:focus-visible + .disc-card{outline:2px solid var(--focus);outline-offset:2px}
+  .disc-title{font-family:var(--font-display);font-weight:600}
+  .disc-desc{font-size:.82rem}
+  .field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+  .field label{font-size:.9rem;font-weight:500}
+  .opt{color:var(--text-muted);font-weight:400}
+  .field input,.field select,.field textarea{min-height:48px;padding:.7rem .9rem;background:var(--onyx-900);
+    border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-family:var(--font-body);font-size:1rem}
+  .field textarea{min-height:auto;resize:vertical}
+  .field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{border-color:var(--accent)}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--danger)}
+  .err{color:var(--danger);font-size:.8rem;min-height:1em}
+  .consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;color:var(--slate-300)}
+  .consent input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:none}
+  .consent a{color:var(--accent);text-decoration:underline}
+  .wizard-nav{display:flex;justify-content:space-between;gap:.8rem;margin-top:var(--space-4)}
+  .wizard-nav .btn--primary{margin-left:auto}
+  .form-status{min-height:1.4em;font-size:.9rem;margin-top:1rem}
+  .form-status.ok{color:var(--success)}
+  .form-status.err{color:var(--danger)}
+  @media (max-width:640px){
+    .disc-grid{grid-template-columns:1fr}
+    .page-head h1{font-size:var(--fs-2xl)}
+    .stepper{gap:.8rem}
+    .step span:not(.mono){display:none}
+  }
+</style>
+
+<script define:vars={{ inbox: site.aanvraagEmail }}>
+  const form = document.getElementById('wizard');
+  const panels = [...form.querySelectorAll('.panel')];
+  const steps = [...document.querySelectorAll('.step')];
+  const bar = document.getElementById('progressBar');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const status = document.getElementById('wizStatus');
+  const emailRe = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  let current = 1;
+  const total = panels.length;
+
+  // Pre-select discipline via ?dienst=
+  const wanted = new URLSearchParams(location.search).get('dienst');
+  if (wanted) {
+    const radios = [...form.querySelectorAll('input[name="discipline"]')];
+    const map = { webdesign: 'Webdesign', 'logo-branding': 'Logo', '3d-printen': '3D' };
+    const hit = radios.find((r) => r.value.toLowerCase().includes((map[wanted] || wanted).toLowerCase()));
+    if (hit) hit.checked = true;
+  }
+
+  const setErr = (field, msg) => {
+    const wrap = field.closest('.field');
+    if (wrap) { wrap.classList.toggle('invalid', !!msg); const e = wrap.querySelector('[data-err]'); if (e) e.textContent = msg; }
+  };
+  const validateStep = (n) => {
+    if (n === 1) return true; // radio heeft altijd een selectie
+    if (n === 2) {
+      let ok = true;
+      if (!form.budget.value) { setErr(form.budget, 'Kies een richtprijs.'); ok = false; } else setErr(form.budget, '');
+      if (form.scope.value.trim().length < 10) { setErr(form.scope, 'Vertel iets meer (min. 10 tekens).'); ok = false; } else setErr(form.scope, '');
+      return ok;
+    }
+    if (n === 3) {
+      let ok = true;
+      if (!form.wnaam.value.trim()) { setErr(form.wnaam, 'Vul je naam in.'); ok = false; } else setErr(form.wnaam, '');
+      if (!emailRe.test(form.wemail.value.trim())) { setErr(form.wemail, 'Vul een geldig e-mailadres in.'); ok = false; } else setErr(form.wemail, '');
+      return ok;
+    }
+    return true;
+  };
+  const render = () => {
+    panels.forEach((p) => p.classList.toggle('active', +p.dataset.panel === current));
+    steps.forEach((s) => {
+      const n = +s.dataset.step;
+      s.classList.toggle('active', n === current);
+      s.classList.toggle('done', n < current);
+    });
+    bar.style.width = (current / total) * 100 + '%';
+    backBtn.hidden = current === 1;
+    nextBtn.hidden = current === total;
+    submitBtn.hidden = current !== total;
+    location.hash = 'stap-' + current;
+  };
+  nextBtn.addEventListener('click', () => {
+    if (!validateStep(current)) { status.className = 'form-status err'; status.textContent = 'Controleer de gemarkeerde velden.'; return; }
+    status.textContent = ''; status.className = 'form-status';
+    if (current < total) current++; render();
+  });
+  backBtn.addEventListener('click', () => { if (current > 1) current--; render(); });
+  form.addEventListener('input', (e) => { if (e.target.closest('.field.invalid')) validateStep(current); });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!validateStep(3)) { status.className = 'form-status err'; status.textContent = 'Controleer de gemarkeerde velden.'; return; }
+    if (!form.wconsent.checked) { status.className = 'form-status err'; status.textContent = 'Bevestig het privacybeleid om te versturen.'; return; }
+    // Voorlopig: aanvraag via e-mail (mailto) naar de studio-inbox.
+    const disc = (form.querySelector('input[name="discipline"]:checked') || {}).value || '-';
+    const subject = `Offerteaanvraag via website — ${disc}`;
+    const body =
+      `Discipline: ${disc}\n` +
+      `Budget: ${form.budget.value}\n` +
+      `Deadline: ${form.deadline.value || '-'}\n` +
+      `Omschrijving: ${form.scope.value}\n\n` +
+      `Naam: ${form.wnaam.value}\n` +
+      `E-mail: ${form.wemail.value}\n`;
+    window.location.href = `mailto:${inbox}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    form.innerHTML = '<div class="wiz-done"><span class="badge">Aanvraag klaar</span><h2>Je e-mailprogramma opent met je aanvraag</h2><p class="muted">Verstuur de e-mail om je offerteaanvraag af te ronden. Lukt dat niet? Mail rechtstreeks naar info@jvnkompas.be. Ik kom binnen twee werkdagen bij je terug.</p><a href="/werk" class="btn btn--ghost">Bekijk ondertussen het werk</a></div>';
+  });
+  render();
+  // Deep-link naar stap via hash
+  const h = location.hash.match(/stap-(\d)/); if (h) { current = Math.min(total, Math.max(1, +h[1])); render(); }
+</script>
+
+<style is:global>
+  .wiz-done{display:flex;flex-direction:column;gap:1rem;align-items:flex-start;text-align:left}
+  .wiz-done h2{font-size:var(--fs-xl)}
+  .wiz-done p{max-width:46ch}
+  .wiz-done .btn{margin-top:.6rem}
+</style>
