@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+const { title = 'Privacybeleid' } = Astro.props;
+---
+<Base title={`${title} — JVN Kompas`} description="Privacybeleid van JVN Kompas.">
+  <section class="section legal">
+    <div class="wrap">
+      <span class="eyebrow"><span class="idx">Juridisch</span> / {title}</span>
+      <h1>{title}</h1>
+      <p class="lead">Dit is een voorbeeldtekst. Vervang deze door je definitieve, juridisch nagekeken beleid vóór publicatie.</p>
+      <div class="legal-body">
+        <h2>Welke gegevens verzamel ik?</h2>
+        <p>Enkel de gegevens die je zelf invult via het contact- of offerteformulier (naam, e-mail, telefoon en je bericht). Deze worden gebruikt om je aanvraag te beantwoorden.</p>
+        <h2>Hoe lang bewaar ik ze?</h2>
+        <p>Niet langer dan nodig om je vraag te behandelen en de wettelijke verplichtingen na te komen.</p>
+        <h2>Jouw rechten</h2>
+        <p>Je kunt op elk moment inzage, correctie of verwijdering van je gegevens vragen via <a href="mailto:info@jvnkompas.be">info@jvnkompas.be</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal .wrap{max-width:760px}
+  .legal h1{font-size:var(--fs-2xl);margin:1rem 0 1.2rem}
+  .legal-body{margin-top:var(--space-4);color:var(--slate-300)}
+  .legal-body h2{color:var(--text);font-size:var(--fs-lg);margin:var(--space-4) 0 .7rem}
+  .legal-body p{margin-bottom:1.1rem;line-height:1.7}
+  .legal-body a{color:var(--accent);text-decoration:underline}
+</style>

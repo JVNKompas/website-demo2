@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+const waarden = [
+  { t: 'Concreet boven vaag', d: 'Je krijgt geen vakjargon, maar duidelijke keuzes en een prijs die klopt.' },
+  { t: 'Lokaal en bereikbaar', d: 'Vragen? Je belt of mailt geen callcenter, maar mij.' },
+  { t: 'Afgewerkt, niet half', d: 'Een project is klaar als jíj tevreden bent, niet als het “goed genoeg” is.' },
+];
+---
+<Base title="Over — JVN Kompas" description="De maker achter JVN Kompas: één lokaal aanspreekpunt voor web, merk en 3D-maakwerk.">
+  <section class="section page-head">
+    <div class="wrap over-hero">
+      <div>
+        <span class="eyebrow"><span class="idx">Over</span> / De maker</span>
+        <h1>De maker achter JVN Kompas</h1>
+        <p class="lead">JVN Kompas is <strong>[Naam]</strong> — [functie/achtergrond]. Ik combineer ontwerp en maakwerk — websites, logo’s en 3D-print — én bied alle soorten IT-support, aan huis of op afstand. Zo kun je voor je hele digitale verhaal bij één iemand terecht.</p>
+      </div>
+      <div class="over-visual" role="img" aria-label="Foto van de maker volgt binnenkort">
+        <div class="photo-placeholder">
+          <span class="ph-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4 4 3 3-2 6 5"/>
+            </svg>
+          </span>
+          <span class="mono ph-text">Foto volgt binnenkort</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow"><span class="idx">Waarden</span> / Waar ik voor sta</span>
+      <div class="grid grid-3 waarden">
+        {waarden.map((w) => (
+          <div class="card reveal">
+            <h3>{w.t}</h3>
+            <p class="muted">{w.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner title="Leer me kennen" text="Een kort gesprek zegt vaak meer dan tien e-mails. Plan gerust een vrijblijvende kennismaking." primary={{ label: 'Plan een gesprek', href: '/contact' }} secondary={{ label: 'Bekijk het werk', href: '/werk' }} />
+</Base>
+
+<style>
+  .page-head{padding-bottom:0}
+  .over-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:var(--space-5);align-items:center}
+  .over-hero h1{font-size:var(--fs-3xl);margin-top:1rem}
+  .over-hero .lead{margin-top:1.2rem}
+  .over-visual{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3}
+  .photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+    background:
+      repeating-linear-gradient(135deg,transparent,transparent 14px,rgba(232,93,58,.05) 15px,rgba(232,93,58,.05) 16px),
+      var(--surface);color:var(--text-muted)}
+  .ph-icon{width:56px;height:56px;color:var(--copper-600)}
+  .ph-icon svg{width:100%;height:100%}
+  .ph-text{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase}
+  .waarden{margin-top:var(--space-3)}
+  .waarden h3{font-size:1.2rem;margin-bottom:.6rem}
+  @media (max-width:900px){
+    .over-hero{grid-template-columns:1fr}
+    .over-visual{order:-1}
+    .over-hero h1{font-size:var(--fs-2xl)}
+  }
+</style>

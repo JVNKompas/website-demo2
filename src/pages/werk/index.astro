@@ -1,0 +1,108 @@
+---
+import Base from '../../layouts/Base.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import { cases } from '../../data/site.js';
+const filters = ['ALLE', 'WEB', 'LOGO', '3D'];
+---
+<Base title="Werk — JVN Kompas" description="Een greep uit recente projecten in web, branding en 3D-print.">
+  <section class="section page-head">
+    <div class="wrap">
+      <span class="eyebrow"><span class="idx">Projecten</span> / Portfolio</span>
+      <h1>Projecten</h1>
+      <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Een greep uit recente projecten — filter op wat jou interesseert, of bekijk alles.</p>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="wrap">
+      <div class="filter-bar" role="tablist" aria-label="Filter op discipline">
+        {filters.map((f, i) => (
+          <button class:list={["chip", { active: i === 0 }]} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-filter={f}>{f}</button>
+        ))}
+        <span class="mono result-count" id="resultCount" aria-live="polite"></span>
+      </div>
+
+      <div class="grid grid-3 work-grid" id="workGrid">
+        {cases.map((c) => <WorkCard c={c} />)}
+      </div>
+
+      <div class="empty" id="emptyState" hidden>
+        <span class="empty-compass" aria-hidden="true"></span>
+        <p>Nog geen werk in deze categorie — vraag gerust naar mogelijkheden.</p>
+        <div class="empty-actions">
+          <a href="/offerte" class="btn btn--primary">Vraag een offerte</a>
+          <button class="btn btn--ghost" id="clearFilter">Wis filters</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner />
+</Base>
+
+<style>
+  .page-head{padding-bottom:0}
+  .page-head h1{font-size:var(--fs-3xl);margin-top:1rem}
+  .page-head .lead{margin-top:1.2rem}
+  .filter-bar{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:var(--space-4);
+    padding-bottom:var(--space-3);border-bottom:1px solid var(--border)}
+  .chip{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.1em;color:var(--text-muted);
+    background:transparent;border:1px solid var(--border);border-radius:var(--radius-pill);
+    padding:.5em 1.1em;cursor:pointer;min-height:40px;
+    transition:all var(--dur-base) var(--ease-standard)}
+  .chip:hover{color:var(--text);border-color:var(--copper-600)}
+  .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .result-count{margin-left:auto;font-size:.78rem;color:var(--text-muted)}
+  .work-grid.filtering{opacity:.4;transition:opacity var(--dur-fast)}
+  .empty{text-align:center;padding:var(--space-6) 0;display:flex;flex-direction:column;align-items:center;gap:1.2rem}
+  .empty-compass{width:56px;height:56px;transform:rotate(30deg);border-radius:50%;
+    border:2px dashed var(--copper-600);position:relative}
+  .empty-compass::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:22px;
+    background:var(--accent);transform:translate(-50%,-50%) rotate(20deg);transform-origin:center}
+  .empty p{color:var(--text-muted);max-width:40ch}
+  .empty-actions{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+  @media (max-width:640px){
+    .filter-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+    .result-count{display:none}
+    .page-head h1{font-size:var(--fs-2xl)}
+  }
+</style>
+
+<script>
+  const grid = document.getElementById('workGrid');
+  const chips = [...document.querySelectorAll('.chip')];
+  const empty = document.getElementById('emptyState');
+  const count = document.getElementById('resultCount');
+  const cards = [...grid.querySelectorAll('.work')];
+
+  function apply(filter) {
+    grid.classList.add('filtering');
+    let visible = 0;
+    cards.forEach((c) => {
+      const show = filter === 'ALLE' || c.dataset.disc === filter;
+      c.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    empty.hidden = visible !== 0;
+    grid.hidden = visible === 0;
+    count.textContent = `${visible} project${visible === 1 ? '' : 'en'}`;
+    setTimeout(() => grid.classList.remove('filtering'), 180);
+
+    // URL sync
+    const url = new URL(location.href);
+    if (filter === 'ALLE') url.searchParams.delete('disc'); else url.searchParams.set('disc', filter);
+    history.replaceState({}, '', url);
+  }
+  function select(chip) {
+    chips.forEach((c) => { c.classList.toggle('active', c === chip); c.setAttribute('aria-selected', c === chip); });
+    apply(chip.dataset.filter);
+  }
+  chips.forEach((chip) => chip.addEventListener('click', () => select(chip)));
+  document.getElementById('clearFilter')?.addEventListener('click', () => select(chips[0]));
+
+  // Init from URL
+  const initial = new URLSearchParams(location.search).get('disc');
+  const match = chips.find((c) => c.dataset.filter === initial);
+  select(match || chips[0]);
+</script>

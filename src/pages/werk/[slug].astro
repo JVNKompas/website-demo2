@@ -1,0 +1,121 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import { cases, testimonials } from '../../data/site.js';
+
+export function getStaticPaths() {
+  return cases.map((c, i) => ({ params: { slug: c.slug }, props: { c, next: cases[(i + 1) % cases.length] } }));
+}
+const { c, next } = Astro.props;
+const t = testimonials[0];
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: c.titel,
+  about: c.sector,
+  creator: { '@type': 'ProfessionalService', name: 'JVN Kompas' },
+};
+---
+<Base title={`${c.titel} — JVN Kompas`} description={c.summary} jsonld={jsonld}>
+  <article>
+    <section class="section case-hero">
+      <div class="wrap">
+        <nav class="crumbs mono" aria-label="Kruimelpad">
+          <a href="/werk">Werk</a> <span aria-hidden="true">/</span> <span>{c.klant}</span>
+        </nav>
+        <span class="badge">{c.disc}</span>
+        <h1>{c.titel}</h1>
+        <p class="mono case-meta">{c.klant} · {c.jaar} · {c.sector}</p>
+        <p class="lead case-summary">{c.summary}</p>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="wrap">
+        <div class="case-visual" style={`--c:${c.kleur}`} role="img" aria-label={`Projectbeeld: ${c.titel}`}>
+          <span class="coord mono">{c.disc} · {c.jaar}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap case-body">
+        <div class="case-content">
+          <div class="block">
+            <h2>De uitdaging</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent euismod, nisl eget ultricies aliquam, nunc urna tincidunt nisi, eu tincidunt nisl nunc eu nisi.</p>
+          </div>
+          <div class="block">
+            <h2>De aanpak</h2>
+            <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          </div>
+          <div class="block">
+            <h2>Het resultaat</h2>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.</p>
+          </div>
+        </div>
+        <aside class="case-side">
+          <div class="side-panel">
+            <h3 class="mono">Projectdetails</h3>
+            <dl>
+              <div><dt>Klant</dt><dd>{c.klant}</dd></div>
+              <div><dt>Sector</dt><dd>{c.sector}</dd></div>
+              <div><dt>Discipline</dt><dd>{c.disc}</dd></div>
+              <div><dt>Jaar</dt><dd>{c.jaar}</dd></div>
+            </dl>
+          </div>
+          <figure class="side-testi">
+            <blockquote>{t.quote}</blockquote>
+            <figcaption class="mono">— {t.naam}</figcaption>
+          </figure>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="wrap">
+        <a href={`/werk/${next.slug}`} class="next-case">
+          <span class="mono">Volgend project →</span>
+          <span class="next-title">{next.titel}</span>
+        </a>
+      </div>
+    </section>
+  </article>
+
+  <CtaBanner />
+</Base>
+
+<style>
+  .crumbs{font-size:.78rem;color:var(--text-muted);margin-bottom:1.4rem}
+  .crumbs a:hover{color:var(--accent)}
+  .case-hero .badge{margin-bottom:1rem;display:inline-block}
+  .case-hero h1{font-size:var(--fs-3xl);max-width:18ch}
+  .case-meta{font-size:.82rem;color:var(--text-muted);margin-top:1rem}
+  .case-summary{margin-top:1.2rem}
+  .case-visual{aspect-ratio:16/8;border-radius:var(--radius-lg);border:1px solid var(--border);position:relative;
+    background:linear-gradient(150deg,var(--c),var(--onyx-900))}
+  .case-visual::after{content:"";position:absolute;inset:0;border-radius:var(--radius-lg);
+    background:radial-gradient(circle at 75% 25%,rgba(232,93,58,.16),transparent 55%)}
+  .coord{position:absolute;left:16px;bottom:14px;font-size:.72rem;color:var(--copper-300);
+    background:rgba(26,26,26,.6);padding:.3em .7em;border-radius:var(--radius-pill);z-index:2}
+  .case-body{display:grid;grid-template-columns:1.6fr .9fr;gap:var(--space-5);align-items:start}
+  .block{margin-bottom:var(--space-4)}
+  .block h2{font-size:var(--fs-lg);margin-bottom:.7rem}
+  .block p{color:var(--slate-300);max-width:60ch}
+  .side-panel,.side-testi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-3)}
+  .side-panel h3{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+  .side-panel dl div{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem}
+  .side-panel dt{color:var(--text-muted)}
+  .side-testi{margin-top:var(--space-2)}
+  .side-testi blockquote{color:var(--text)}
+  .side-testi figcaption{font-size:.75rem;color:var(--text-muted);margin-top:.8rem}
+  .next-case{display:flex;flex-direction:column;gap:.4rem;padding:var(--space-4);border:1px solid var(--border);
+    border-radius:var(--radius-lg);background:var(--surface);transition:border-color var(--dur-base) var(--ease-standard)}
+  .next-case:hover{border-color:var(--copper-600)}
+  .next-case .mono{color:var(--accent);font-size:.8rem}
+  .next-title{font-family:var(--font-display);font-weight:600;font-size:1.3rem}
+  @media (max-width:900px){
+    .case-body{grid-template-columns:1fr}
+    .case-hero h1{font-size:var(--fs-2xl)}
+  }
+</style>
