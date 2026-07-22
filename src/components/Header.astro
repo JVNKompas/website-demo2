@@ -1,5 +1,6 @@
 ---
 import { nav, diensten, site } from '../data/site.js';
+import MobileNav from './MobileNav.astro';
 const path = Astro.url.pathname;
 const isActive = (href) => href === '/' ? path === '/' : path.startsWith(href);
 ---
@@ -27,24 +28,13 @@ const isActive = (href) => href === '/' ? path === '/' : path.startsWith(href);
       <a href="/contact" class="btn btn--primary nav-cta">Contact</a>
     </nav>
 
-    <button class="burger" id="burger" aria-label="Menu openen" aria-expanded="false" aria-controls="drawer">
+    <button class="burger" id="burger" aria-label="Menu openen" aria-expanded="false" aria-controls="mobileNav" aria-haspopup="dialog">
       <span></span><span></span><span></span>
     </button>
   </div>
-
-  <div class="drawer" id="drawer" hidden>
-    <nav class="drawer-nav" aria-label="Mobiele navigatie">
-      <a href="/diensten" class="drawer-link">Diensten</a>
-      {diensten.map((d) => (
-        <a href={`/diensten/${d.slug}`} class="drawer-sub"><span class="mono">{d.disc}</span> {d.titel}</a>
-      ))}
-      {nav.filter(n => n.href !== '/diensten').map((n) => (
-        <a href={n.href} class="drawer-link">{n.label}</a>
-      ))}
-      <a href="/contact" class="btn btn--primary drawer-cta">Contact</a>
-    </nav>
-  </div>
 </header>
+
+<MobileNav />
 
 <style>
   .site-header{position:sticky;top:0;z-index:100;
@@ -76,14 +66,6 @@ const isActive = (href) => href === '/' ? path === '/' : path.startsWith(href);
   .burger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
   .burger[aria-expanded="true"] span:nth-child(2){opacity:0}
   .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-  .drawer{position:fixed;inset:72px 0 0 0;background:var(--bg);z-index:99;padding:var(--gutter);
-    animation:drawerIn var(--dur-entrance) var(--ease-decel)}
-  @keyframes drawerIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-  .drawer-nav{display:flex;flex-direction:column;gap:.2rem}
-  .drawer-link{font-family:var(--font-display);font-size:1.6rem;font-weight:600;padding:.6rem 0;border-bottom:1px solid var(--border)}
-  .drawer-sub{color:var(--text-muted);padding:.5rem 0 .5rem 1rem;display:flex;gap:.7rem}
-  .drawer-sub .mono{color:var(--accent);font-size:.75rem}
-  .drawer-cta{margin-top:1.5rem;width:100%}
   @media (max-width:900px){
     .nav-desktop{display:none}
     .burger{display:flex}
@@ -91,19 +73,8 @@ const isActive = (href) => href === '/' ? path === '/' : path.startsWith(href);
 </style>
 
 <script>
+  // Alleen de scroll-staat van de header. De mobiele navigatie leeft in MobileNav.astro.
   const header = document.getElementById('siteHeader');
   const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 12);
   onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
-
-  const burger = document.getElementById('burger');
-  const drawer = document.getElementById('drawer');
-  const toggle = (open) => {
-    burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
-    drawer.hidden = !open;
-    document.body.style.overflow = open ? 'hidden' : '';
-  };
-  burger?.addEventListener('click', () => toggle(drawer.hidden));
-  drawer?.addEventListener('click', (e) => { if (e.target.tagName === 'A') toggle(false); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !drawer.hidden) toggle(false); });
 </script>
